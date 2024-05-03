@@ -4,6 +4,7 @@ import ShoppingCart from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import {iconBgColor} from '../Constants';
 
 function Navbar() {
     const { authState, logOut } = useAuth();
@@ -41,7 +42,7 @@ function Navbar() {
                             </Button>
                         )}
 
-                        <Button color="inherit" onClick={handleLogout}>
+                        <Button color="inherit" onClick={handleLogout} sx={{backgroundColor: iconBgColor}}>
                             Logout
                         </Button>
                     </>

@@ -9,13 +9,15 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: false,
     isAdmin: false,
     user: null,
+    access_token: ''
   });
 
-  const logIn = (user, isAdmin) => {
+  const logIn = (user, isAdmin, access_token) => {
     setAuthState({
       isLoggedIn: true,
       isAdmin,
       user,
+      access_token
     });
   };
 
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
       isLoggedIn: false,
       isAdmin: false,
       user: null,
+      access_token: ''
     });
   };
 

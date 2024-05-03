@@ -1,0 +1,1 @@
+export const iconBgColor = 'rgba(245,0,87,255)';
