@@ -6,6 +6,8 @@ import { Card, CardMedia, CardContent, Typography, Button, IconButton, Grid, Men
 import { Edit, Delete } from '@mui/icons-material';
 import Api from '../../common/Api';
 import Navbar from '../../common/navbar/NavBar';
+import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
+import axios from "axios";
 
 const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
     const navigate = useNavigate();
@@ -80,6 +82,25 @@ function Products() {
     const [category, setCategory] = useState('All');
     const [sortBy, setSortBy] = useState(null);
 
+    const handleDeleteCall = (id) => {
+        axios
+          .delete(`http://localhost:8080/api/products/${id}`, {
+              headers: {
+                Authorization:`Bearer ${authState.access_token}`,
+              },
+          })
+          .then(function (response) {
+            console.log(`Product ${id} Deleted`);
+            SuccessToast(`Product deleted successfully!`);
+            //triggerDataFetch();
+            navigate("/products");
+          })
+          .catch(function (error) {
+            ErrorToast(
+              `Error: There was an issue in deleting product, please try again later.`
+            );
+          });
+    };
 
     const getAllCategories = async () => {
         try {
@@ -155,7 +176,7 @@ function Products() {
     };
 
     const handleDelete = (productId) => {
-        // Handle delete functionality
+        handleDeleteCall(productId);
     };
 
     const searchProducts = (searchQuery) => {
