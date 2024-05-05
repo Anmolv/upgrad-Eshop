@@ -1,12 +1,12 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, TextField, Box } from '@mui/material';
+import { React } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import ShoppingCart from '@mui/icons-material/ShoppingCart';
-import SearchIcon from '@mui/icons-material/Search';
+import SearchBar from '../../components/SearchBar/SearchBar';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import {iconBgColor} from '../Constants';
+import { iconBgColor } from '../Constants';
 
-function Navbar() {
+const Navbar = ({ onSearch }) => {
     const { authState, logOut } = useAuth();
     const navigate = useNavigate();
 
@@ -27,9 +27,9 @@ function Navbar() {
 
                 {authState.isLoggedIn ? (
                     <>
-                        <SearchBar />
+                        <SearchBar onSearch={onSearch} />
                         <Button color="inherit">
-                            <Link to="/" style={{ color: 'inherit', textTransform: 'none', textDecoration: 'underline' }}>
+                            <Link to="/products" style={{ color: 'inherit', textTransform: 'none', textDecoration: 'underline' }}>
                                 Home
                             </Link>
                         </Button>
@@ -42,7 +42,7 @@ function Navbar() {
                             </Button>
                         )}
 
-                        <Button color="inherit" onClick={handleLogout} sx={{backgroundColor: iconBgColor}}>
+                        <Button color="inherit" onClick={handleLogout} sx={{ backgroundColor: iconBgColor }}>
                             Logout
                         </Button>
                     </>
@@ -66,29 +66,6 @@ function Navbar() {
             </Toolbar>
         </AppBar >
     );
-
-    function SearchBar() {
-        return <Box style={{ flexGrow: 8, display: 'flex', justifyContent: 'center' }}>
-            <TextField
-                variant="outlined"
-                placeholder="Search..."
-                size="small"
-                sx={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '6px',
-                    borderBlockColor: 'rgba(255, 255, 255, 0.2)',
-                    width: '30%',
-                    input: {
-                        color: 'white'
-                    }
-                }}
-                InputProps={{
-                    startAdornment: (
-                        <SearchIcon position="start" style={{ marginRight: 8, color: 'white' }} />
-                    ),
-                }} />
-        </Box>;
-    }
 }
 
 export default Navbar;

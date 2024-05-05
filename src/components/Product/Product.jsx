@@ -1,45 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../common/AuthContext';
+import { useProduct } from '../../common/ProductContext';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardMedia, CardContent, Typography, Button, IconButton, Grid, Menu, MenuItem, Stack, ToggleButtonGroup, InputLabel, Select, ToggleButton, Divider, Box } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Button, IconButton, Grid, MenuItem, Stack, ToggleButtonGroup, InputLabel, Select, ToggleButton, Divider, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import image1 from '../../assets/image1.jpg';
-import image2 from '../../assets/image2.jpg';
-
-const dummyProducts = [
-    {
-        id: 1,
-        name: 'Product 1',
-        image: image1,
-        price: 20,
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        category: 'Category A',
-    },
-    {
-        id: 2,
-        name: 'Product 2',
-        image: image2,
-        price: 30,
-        description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        category: 'Category B',
-    },
-    {
-        id: 3,
-        name: 'Product 3',
-        image: image1,
-        price: 40,
-        description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        category: 'Category C',
-    },
-    {
-        id: 4,
-        name: 'Product 4',
-        image: image2,
-        price: 20,
-        description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        category: 'Category C',
-    }
-];
+import Api from '../../common/Api';
+import Navbar from '../../common/navbar/NavBar';
 
 const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
     return (
@@ -48,7 +14,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
                 component="img"
                 alt={product.name}
                 height="200"
-                image={product.image}
+                image={product.imageUrl}
                 title={product.name}
             />
             <CardContent>
@@ -88,7 +54,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
 
 const ProductList = ({ products, isAdmin, handleEdit, handleDelete, handleBuy }) => {
     return (
-        <Grid container spacing={2} sx={{paddingTop: '20px', paddingLeft: '80px', paddingRight: '40px'}}>
+        <Grid container spacing={2} sx={{ paddingTop: '20px', paddingLeft: '80px', paddingRight: '40px' }}>
             {products.map((product) => (
                 <Grid item xs={12} sm={6} md={4} key={product.id}>
                     <ProductCard
@@ -104,12 +70,42 @@ const ProductList = ({ products, isAdmin, handleEdit, handleDelete, handleBuy })
     );
 };
 
-const categories = ['All', 'Category A', 'Category B', 'Category C'];
-
-
 function Products() {
     const { authState } = useAuth();
     const navigate = useNavigate();
+    const { productState, setProducts } = useProduct();
+    const [filteredProducts, setFilteredProducts] = useState(productState.products);
+    const [categories, setCategories] = useState(['All']);
+    const [category, setCategory] = useState('All');
+    const [sortBy, setSortBy] = useState(null);
+
+
+    const getAllCategories = async () => {
+        try {
+            const response = await Api.get('/products/categories');
+            if (response.status === 200) {
+                setCategories(['All', ...response['data']]);
+            } else if (response.status === 401) {
+                alert(`Failed to fetch categories!`);
+            }
+        } catch (error) {
+            alert(`Failed to fetch categories!`);
+        }
+    }
+
+    const getAllProducts = async () => {
+        try {
+            const response = await Api.get('/products');
+            if (response.status === 200) {
+                setProducts([...response['data']]);
+                setFilteredProducts([...response['data']]);
+            } else if (response.status === 401) {
+                alert(`Failed to fetch products!`);
+            }
+        } catch (error) {
+            alert(`Failed to fetch products!`);
+        }
+    }
 
     useEffect(() => {
         if (!authState.isLoggedIn) {
@@ -117,18 +113,19 @@ function Products() {
         }
     }, []);
 
-    const [filteredProducts, setFilteredProducts] = useState(dummyProducts);
-    const [category, setCategory] = useState('All');
-    const [sortBy, setSortBy] = useState(null);
+    useEffect(() => {
+        getAllCategories();
+        getAllProducts();
+    }, []);
 
 
     const handleFilter = (event) => {
         const selectedCategory = event.target.value;
         setCategory(selectedCategory);
         if (selectedCategory === 'All') {
-            setFilteredProducts(dummyProducts);
+            setFilteredProducts(productState.products);
         } else {
-            const filtered = dummyProducts.filter((product) => {
+            const filtered = productState.products.filter((product) => {
                 return product.category === selectedCategory;
             });
             setFilteredProducts(filtered);
@@ -160,46 +157,58 @@ function Products() {
         // Handle delete functionality
     };
 
+    const searchProducts = (searchQuery) => {
+        const filtered = productState.products.filter(product =>
+            product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredProducts(filtered);
+    };
+
     return (
-        <Stack>
-            <ToggleButtonGroup value={category} exclusive onChange={handleFilter} sx={{ margin: '10px', justifyContent: 'center' }}>
-                {categories.map((category) => (
-                    <ToggleButton key={category} value={category}>
-                        {category}
-                    </ToggleButton>
-                ))}
-            </ToggleButtonGroup>
+        <>
+            <Navbar onSearch={searchProducts}/>
+            <Stack>
+                <ToggleButtonGroup value={category} exclusive onChange={handleFilter} sx={{ margin: '10px', justifyContent: 'center' }}>
+                    {
 
-            <div style={{ marginLeft: '20px' }}>
-                <InputLabel id="sort-by-label" >Sort By:</InputLabel>
-                <Select
-                    labelId="sort-by-label"
-                    id="sort-by"
-                    value={sortBy ?? 'Select...'}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    renderValue={(value) => (
-                        <Box display="flex">
-                            <span>{value}</span>
-                            <Divider orientation='vertical' flexItem style={{ marginLeft: 'auto' }} />
-                        </Box>
-                    )}
-                    sx={{ height: '40px', width: '300px' }}
-                >
-                    <MenuItem value="Default">Default</MenuItem>
-                    <MenuItem value="Price: High To Low">Price: High to Low</MenuItem>
-                    <MenuItem value="Price: Low To High">Price: Low to High</MenuItem>
-                    <MenuItem value="Newest">Newest</MenuItem>
-                </Select>
-            </div>
+                        categories.map((category) => (
+                            <ToggleButton key={category} value={category}>
+                                {category}
+                            </ToggleButton>
+                        ))
+                    }
+                </ToggleButtonGroup>
 
-            <ProductList
-                products={sortedProducts}
-                isAdmin={authState.isAdmin}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                handleBuy = {handleBuy}
-            />
-        </Stack>
+                <div style={{ marginLeft: '20px' }}>
+                    <InputLabel id="sort-by-label" >Sort By:</InputLabel>
+                    <Select
+                        labelId="sort-by-label"
+                        id="sort-by"
+                        value={sortBy ?? 'Select...'}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        renderValue={(value) => (
+                            <Box display="flex">
+                                <span>{value}</span>
+                                <Divider orientation='vertical' flexItem style={{ marginLeft: 'auto' }} />
+                            </Box>
+                        )}
+                        sx={{ height: '40px', width: '300px' }}
+                    >
+                        <MenuItem value="Default">Default</MenuItem>
+                        <MenuItem value="Price: High To Low">Price: High to Low</MenuItem>
+                        <MenuItem value="Price: Low To High">Price: Low to High</MenuItem>
+                        <MenuItem value="Newest">Newest</MenuItem>
+                    </Select>
+                </div>
+                <ProductList
+                    products={sortedProducts}
+                    isAdmin={authState.isAdmin}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    handleBuy={handleBuy}
+                />
+            </Stack>
+        </>
     );
 
 }
