@@ -8,6 +8,7 @@ import Api from '../../common/Api';
 import Navbar from '../../common/navbar/NavBar';
 
 const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
+    const navigate = useNavigate();
     return (
         <Card sx={{ width: 400 }}>
             <CardMedia
@@ -36,7 +37,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
                     </Button>
                     {isAdmin && (
                         <div>
-                            <IconButton onClick={() => onEdit(product.id)}>
+                            <IconButton onClick={() => navigate(`/editProduct/${product.id}`)}>
                                 <Edit />
                             </IconButton>
                             <IconButton onClick={() => onDelete(product.id)}>
