@@ -12,6 +12,7 @@ import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
 import MuiButtonSubmitButton from "../../common/MuiButtonSubmitButton";
 
 import "./AddUpdateProduct.css";
+import Navbar from "../../common/navbar/NavBar";
 
 function AddUpdateProduct() {
   const { authToken, isAdmin } = useContext(AuthContext);
@@ -197,6 +198,7 @@ function AddUpdateProduct() {
 
   return (
     <div>
+      <Navbar />
       <div className="addEditContainer">
         {dataLoading ? (
           <Box sx={{ display: "flex" }}>
@@ -289,7 +291,7 @@ function AddUpdateProduct() {
               value={productDescription}
             />
             <MuiButtonSubmitButton
-              value={isEditMode ? "Modify Product" : "Add Product"}
+              value={isEditMode ? "Modify Product" : "Save Product"}
             />
             {isEditMode && isAdmin && (
               <>
