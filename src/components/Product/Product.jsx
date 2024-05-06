@@ -39,7 +39,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
                     </Button>
                     {isAdmin && (
                         <div>
-                            <IconButton onClick={() => navigate(`/editProduct/${product.id}`)}>
+                            <IconButton onClick={() => navigate(`/edit-product/${product.id}`)}>
                                 <Edit />
                             </IconButton>
                             <IconButton onClick={() => onDelete(product.id)}>

@@ -36,7 +36,7 @@ const Navbar = ({ onSearch }) => {
 
                         {authState.isAdmin && (
                             <Button color="inherit">
-                                <Link to="/add-products" style={{ color: 'inherit', textTransform: 'none', textDecoration: 'underline' }}>
+                                <Link to="/add-product" style={{ color: 'inherit', textTransform: 'none', textDecoration: 'underline' }}>
                                     Add Product
                                 </Link>
                             </Button>
