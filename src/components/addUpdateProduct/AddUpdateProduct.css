@@ -5,3 +5,7 @@
   height: 100%;
   text-align: center;
 }
+
+.select__menu {
+  z-index: 1000!important;
+}
