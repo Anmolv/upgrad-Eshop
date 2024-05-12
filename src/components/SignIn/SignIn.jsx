@@ -35,8 +35,7 @@ function SignIn() {
         try {
             const response = await Api.post('/auth/signin', { 'username': email, 'password': password });
             if (response.status === 200) {
-                console.log(`auth: ${response.data['token']}`)
-                logIn(email, true, response.data['token']);
+                logIn(email, response.data['isAdmin'] == null ? true : response.data['isAdmin'], response.data['token']);
                 navigate('/products');
             } else if (response.status === 401) {
                 alert(`User is not authorized. Invalid Email or Password!`)
