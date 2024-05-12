@@ -13,11 +13,12 @@ export const AuthProvider = ({ children }) => {
   });
 
   const logIn = (user, isAdmin, access_token) => {
+    console.log(`auth log : ${access_token}`);
     setAuthState({
       isLoggedIn: true,
       isAdmin,
       user,
-      access_token
+      access_token: access_token
     });
   };
 

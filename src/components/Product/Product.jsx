@@ -179,14 +179,6 @@ function Products() {
         }
     });
 
-    const handleEdit = (productId) => {
-        // Handle edit functionality
-    };
-
-    const handleDelete = (productId, productName) => {
-        handleConfirmDelete(productId, productName);
-    };
-
     const searchProducts = (searchQuery) => {
         const filtered = productState.products.filter(product =>
             product.name.toLowerCase().includes(searchQuery.toLowerCase())

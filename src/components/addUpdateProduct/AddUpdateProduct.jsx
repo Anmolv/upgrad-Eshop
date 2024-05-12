@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
-import { AuthContext } from "../../common/AuthContext";
+import { useAuth } from '../../common/AuthContext';
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, CircularProgress, TextField, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
@@ -16,7 +16,7 @@ import "./AddUpdateProduct.css";
 import Navbar from "../../common/navbar/NavBar";
 
 function AddUpdateProduct() {
-  const { authToken, isAdmin } = useContext(AuthContext);
+  const { authState } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = id !== undefined;
@@ -42,7 +42,7 @@ function AddUpdateProduct() {
     axios
       .get("http://localhost:8080/api/products/categories", {
         headers: {
-          Authorization:`Bearer ${authToken}`,
+          Authorization: `Bearer ${authState.access_token}`,
         },
       })
       .then(function (response) {
@@ -61,7 +61,7 @@ function AddUpdateProduct() {
       axios
         .get(`http://localhost:8080/api/products/${id}`, {
           headers: {
-            Authorization:`Bearer ${authToken}`,
+            Authorization: `Bearer ${authState.access_token}`,
           },
         })
         .then((response) => {
@@ -80,11 +80,10 @@ function AddUpdateProduct() {
         )
         .finally(() => setDataLoading(false));
     }
-  }, [isEditMode, id, authToken]);
+  }, [isEditMode, id, authState.access_token]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setNameError(false);
     setManufacturerError(false);
     setAvailableItemsError(false);
@@ -122,13 +121,13 @@ function AddUpdateProduct() {
             },
             {
               headers: {
-                Authorization:`Bearer ${authToken}`,
+                Authorization: `Bearer ${authState.access_token}`,
               },
             }
           )
           .then(function () {
             SuccessToast(`Product ${name} modified successfully`);
-            <ToastContainer/>
+            <ToastContainer />
             navigate("/products");
           })
           .catch(function () {
@@ -149,12 +148,15 @@ function AddUpdateProduct() {
               price: price,
               imageUrl: imageUrl,
               description: productDescription,
-            }
+            }, {
+            headers: {
+              Authorization: `Bearer ${authState.access_token}`,
+            },
+          }
           );
-        
+
           if (response.status === 201) {
             SuccessToast(`Product ${name} added successfully`);
-            // navigate('/products');
           } else if (response.status === 401) {
             ErrorToast(`Error: There was an issue in adding product: ${name}.`);
           } else {
@@ -163,175 +165,170 @@ function AddUpdateProduct() {
         } catch (error) {
           ErrorToast(`Error: There was an issue in adding product: ${name}.`);
         }
-            // {
-            //   headers: {
-            //     Authorization:`Bearer ${authToken}`,
-            //   },
-            // }
       }
-    }
-  };
+      }
+    };
 
-  const handleDelete = () => {
-    // 删除商品
-    axios
-      .delete(`http://localhost:8080/api/products/${id}`, {
-        headers: {
-          Authorization:`Bearer ${authToken}`,
-        },
-      })
-      .then(() => {
-        SuccessToast(`Product deleted successfully!`);
-        navigate("/products");
-      })
-      .catch(() => {
-        ErrorToast(`Error: There was an issue in deleting the product.`);
-      });
-  };
+    const handleDelete = () => {
+      // 删除商品
+      axios
+        .delete(`http://localhost:8080/api/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.access_token}`,
+          },
+        })
+        .then(() => {
+          SuccessToast(`Product deleted successfully!`);
+          navigate("/products");
+        })
+        .catch(() => {
+          ErrorToast(`Error: There was an issue in deleting the product.`);
+        });
+    };
 
-  const handleDeleteConfirmation = () => {
-    setConfirmDeleteDialogOpen(true);
-  };
+    const handleDeleteConfirmation = () => {
+      setConfirmDeleteDialogOpen(true);
+    };
 
-  const handleDeleteCancel = () => {
-    setConfirmDeleteDialogOpen(false);
-  };
+    const handleDeleteCancel = () => {
+      setConfirmDeleteDialogOpen(false);
+    };
 
-  const handleDeleteConfirm = () => {
-    setConfirmDeleteDialogOpen(false);
-    // 确认删除商品
-    handleDelete();
-  };
+    const handleDeleteConfirm = () => {
+      setConfirmDeleteDialogOpen(false);
+      // 确认删除商品
+      handleDelete();
+    };
 
-  return (
-    <div>
-      <Navbar />
-      <div className="addEditContainer">
-        {dataLoading ? (
-          <Box sx={{ display: "flex" }}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <form autoComplete="off" onSubmit={handleSubmit}>
-            <Typography gutterBottom variant="h5" component="p" sx={{ mb: 3 }}>
-              {isEditMode ? "Modify Product" : "Add Product"}
-            </Typography>
-            <TextField
-              label="Name"
-              onChange={(e) => setName(e.target.value)}
-              required
-              variant="outlined"
-              type="text"
-              sx={{ mb: 3 }}
-              fullWidth
-              value={name}
-              error={nameError}
-            />
-            <div style={{ marginBottom: "30px" }}>
-              <CreatableSelect
-                className="basic-single"
-                classNamePrefix="select"
-                name="category"
-                isClearable
+    return (
+      <div>
+        <Navbar />
+        <div className="addEditContainer">
+          {dataLoading ? (
+            <Box sx={{ display: "flex" }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <form autoComplete="off" onSubmit={handleSubmit}>
+              <Typography gutterBottom variant="h5" component="p" sx={{ mb: 3 }}>
+                {isEditMode ? "Modify Product" : "Add Product"}
+              </Typography>
+              <TextField
+                label="Name"
+                onChange={(e) => setName(e.target.value)}
                 required
-                options={categoryList.map((item) => ({
-                  label: item,
-                  value: item,
-                }))}
-                value={category}
-                onChange={(data) => setCategory(data)}
+                variant="outlined"
+                type="text"
+                sx={{ mb: 3 }}
+                fullWidth
+                value={name}
+                error={nameError}
               />
-            </div>
-            <TextField
-              label="Manufacturer"
-              onChange={(e) => setManufacturer(e.target.value)}
-              required
-              variant="outlined"
-              type="text"
-              sx={{ mb: 3 }}
-              fullWidth
-              value={manufacturer}
-              error={manufacturerError}
-            />
-            <TextField
-              label="Available Items"
-              onChange={(e) => setAvailableItems(e.target.value)}
-              required
-              variant="outlined"
-              type="number"
-              sx={{ mb: 3 }}
-              fullWidth
-              value={
-                availableItems !== undefined
-                  ? Number(availableItems)
-                  : availableItems
-              }
-              error={availableItemsError}
-            />
-            <TextField
-              label="Price"
-              onChange={(e) => setPrice(e.target.value)}
-              required
-              variant="outlined"
-              type="number"
-              value={price !== undefined ? Number(price) : price}
-              error={priceError}
-              fullWidth
-              sx={{ mb: 3 }}
-            />
-            <TextField
-              label="Image URL"
-              onChange={(e) => setImageUrl(e.target.value)}
-              variant="outlined"
-              type="text"
-              sx={{ mb: 3 }}
-              fullWidth
-              value={imageUrl}
-            />
-            <TextField
-              label="Product Description"
-              onChange={(e) => setProductDescription(e.target.value)}
-              variant="outlined"
-              type="text"
-              sx={{ mb: 3 }}
-              fullWidth
-              value={productDescription}
-            />
-            <MuiButtonSubmitButton
-              value={isEditMode ? "Modify Product" : "Save Product"}
-            />
-            {/* <ToastContainer/> */}
-            {isEditMode && isAdmin && (
-              <>
-                {/* 添加删除按钮，并绑定确认删除函数 */}
-                <Button onClick={handleDeleteConfirmation}>Delete Product</Button>
-                {/* 确认删除对话框 */}
-                <Dialog
-                  open={confirmDeleteDialogOpen}
-                  onClose={handleDeleteCancel}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                >
-                  <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      Confirm deletion of product! Are you sure want to delete the product?
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleDeleteCancel}>Cancel</Button>
-                    <Button onClick={handleDeleteConfirm} autoFocus>
-                      OK
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </>
-            )}
-          </form>
-        )}
+              <div style={{ marginBottom: "30px" }}>
+                <CreatableSelect
+                  className="basic-single"
+                  classNamePrefix="select"
+                  name="category"
+                  isClearable
+                  required
+                  options={categoryList.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
+                  value={category}
+                  onChange={(data) => setCategory(data)}
+                />
+              </div>
+              <TextField
+                label="Manufacturer"
+                onChange={(e) => setManufacturer(e.target.value)}
+                required
+                variant="outlined"
+                type="text"
+                sx={{ mb: 3 }}
+                fullWidth
+                value={manufacturer}
+                error={manufacturerError}
+              />
+              <TextField
+                label="Available Items"
+                onChange={(e) => setAvailableItems(e.target.value)}
+                required
+                variant="outlined"
+                type="number"
+                sx={{ mb: 3 }}
+                fullWidth
+                value={
+                  availableItems !== undefined
+                    ? Number(availableItems)
+                    : availableItems
+                }
+                error={availableItemsError}
+              />
+              <TextField
+                label="Price"
+                onChange={(e) => setPrice(e.target.value)}
+                required
+                variant="outlined"
+                type="number"
+                value={price !== undefined ? Number(price) : price}
+                error={priceError}
+                fullWidth
+                sx={{ mb: 3 }}
+              />
+              <TextField
+                label="Image URL"
+                onChange={(e) => setImageUrl(e.target.value)}
+                variant="outlined"
+                type="text"
+                sx={{ mb: 3 }}
+                fullWidth
+                value={imageUrl}
+              />
+              <TextField
+                label="Product Description"
+                onChange={(e) => setProductDescription(e.target.value)}
+                variant="outlined"
+                type="text"
+                sx={{ mb: 3 }}
+                fullWidth
+                value={productDescription}
+              />
+              <MuiButtonSubmitButton
+                value={isEditMode ? "Modify Product" : "Save Product"}
+              />
+              {/* <ToastContainer/> */}
+              {isEditMode && authState.isAdmin && (
+                <>
+                  {/* 添加删除按钮，并绑定确认删除函数 */}
+                  <Button onClick={handleDeleteConfirmation}>Delete Product</Button>
+                  {/* 确认删除对话框 */}
+                  <Dialog
+                    open={confirmDeleteDialogOpen}
+                    onClose={handleDeleteCancel}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Confirm deletion of product! Are you sure want to delete the product?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleDeleteCancel}>Cancel</Button>
+                      <Button onClick={handleDeleteConfirm} autoFocus>
+                        OK
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </>
+              )}
+            </form>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-export default AddUpdateProduct;
+  export default AddUpdateProduct;
