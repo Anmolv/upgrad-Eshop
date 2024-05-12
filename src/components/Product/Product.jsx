@@ -7,9 +7,9 @@ import { Edit, Delete } from '@mui/icons-material';
 import Api from '../../common/Api';
 import Navbar from '../../common/navbar/NavBar';
 import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
-import axios from "axios";
+import ConfirmationModal from '../../common/comfirmationModal/ConfirmationModal';
 
-const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
+const ProductCard = ({ product, isAdmin, onBuy, handleDeleteProduct }) => {
     const navigate = useNavigate();
     return (
         <Card sx={{ width: 400 }}>
@@ -42,7 +42,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
                             <IconButton onClick={() => navigate(`/edit-product/${product.id}`)}>
                                 <Edit />
                             </IconButton>
-                            <IconButton onClick={() => onDelete(product.id)}>
+                            <IconButton onClick={() => handleDeleteProduct(product.id, product.name)}>
                                 <Delete />
                             </IconButton>
                         </div>
@@ -55,7 +55,7 @@ const ProductCard = ({ product, isAdmin, onEdit, onDelete, onBuy }) => {
     );
 };
 
-const ProductList = ({ products, isAdmin, handleEdit, handleDelete, handleBuy }) => {
+const ProductList = ({ products, isAdmin, handleBuy, handleDeleteProduct }) => {
     return (
         <Grid container spacing={2} sx={{ paddingTop: '20px', paddingLeft: '80px', paddingRight: '40px' }}>
             {products.map((product) => (
@@ -63,9 +63,8 @@ const ProductList = ({ products, isAdmin, handleEdit, handleDelete, handleBuy })
                     <ProductCard
                         product={product}
                         isAdmin={isAdmin}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
                         onBuy={handleBuy}
+                        handleDeleteProduct={handleDeleteProduct}
                     />
                 </Grid>
             ))}
@@ -81,25 +80,34 @@ function Products() {
     const [categories, setCategories] = useState(['All']);
     const [category, setCategory] = useState('All');
     const [sortBy, setSortBy] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [deleteProductId, setDeleteProductId] = useState("");
+    const [deleteProductName, setDeleteProductName] = useState("");
 
-    const handleDeleteCall = (id) => {
-        axios
-          .delete(`http://localhost:8080/api/products/${id}`, {
-              headers: {
-                Authorization:`Bearer ${authState.access_token}`,
-              },
-          })
-          .then(function (response) {
-            console.log(`Product ${id} Deleted`);
-            SuccessToast(`Product deleted successfully!`);
-            //triggerDataFetch();
-            navigate("/products");
-          })
-          .catch(function (error) {
-            ErrorToast(
-              `Error: There was an issue in deleting product, please try again later.`
-            );
-          });
+    const handleDeleteProduct = (id, name) => {
+        setShowConfirmation(true);
+        setDeleteProductId(id);
+        setDeleteProductName(name);
+    };
+
+    const handleConfirmDelete = () => {
+        Api
+            .delete(`/products/${deleteProductId}`, {
+                headers: {
+                    Authorization: `Bearer ${authState.access_token}`,
+                },
+            })
+            .then(function (response) {
+                console.log(`Product ${deleteProductId} Deleted`);
+                SuccessToast(`Product ${deleteProductName} deleted successfully`);
+                getAllProducts();
+            })
+            .catch(function (error) {
+                ErrorToast(
+                    `Error: There was an issue in deleting product, please try again later.`
+                );
+            });
+        setShowConfirmation(false);
     };
 
     const getAllCategories = async () => {
@@ -175,8 +183,8 @@ function Products() {
         // Handle edit functionality
     };
 
-    const handleDelete = (productId) => {
-        handleDeleteCall(productId);
+    const handleDelete = (productId, productName) => {
+        handleConfirmDelete(productId, productName);
     };
 
     const searchProducts = (searchQuery) => {
@@ -188,7 +196,7 @@ function Products() {
 
     return (
         <>
-            <Navbar onSearch={searchProducts}/>
+            <Navbar onSearch={searchProducts} />
             <Stack>
                 <ToggleButtonGroup value={category} exclusive onChange={handleFilter} sx={{ margin: '10px', justifyContent: 'center' }}>
                     {
@@ -225,11 +233,15 @@ function Products() {
                 <ProductList
                     products={sortedProducts}
                     isAdmin={authState.isAdmin}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
                     handleBuy={handleBuy}
+                    handleDeleteProduct={handleDeleteProduct}
                 />
             </Stack>
+            <ConfirmationModal
+                isOpen={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={() => { handleConfirmDelete() }}
+            />
         </>
     );
 

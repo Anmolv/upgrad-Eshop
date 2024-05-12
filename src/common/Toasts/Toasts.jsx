@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 export function ErrorToast(message) {
   toast.error(message, {
@@ -11,10 +11,11 @@ export function ErrorToast(message) {
     draggable: true,
     progress: undefined,
     theme: "colored",
+    toastClassName: "toast"
   });
 }
 
-export function SuccessToast(message) {
+export const SuccessToast = (message) => {
   toast.success(message, {
     position: "top-right",
     autoClose: 3000,
@@ -24,7 +25,8 @@ export function SuccessToast(message) {
     draggable: true,
     progress: undefined,
     theme: "colored",
+    toastClassName: "toast"
   });
-}
+} 
 
 export default ErrorToast;

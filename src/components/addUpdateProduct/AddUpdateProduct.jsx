@@ -7,10 +7,11 @@ import { Box, CircularProgress, TextField, Typography, Button, Dialog, DialogAct
 
 //Toasts
 import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
+import { ToastContainer } from "react-toastify";
 
 //MUI Components
 import MuiButtonSubmitButton from "../../common/MuiButtonSubmitButton";
-
+import Api from '../../common/Api';
 import "./AddUpdateProduct.css";
 import Navbar from "../../common/navbar/NavBar";
 
@@ -81,7 +82,7 @@ function AddUpdateProduct() {
     }
   }, [isEditMode, id, authToken]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     setNameError(false);
@@ -126,7 +127,8 @@ function AddUpdateProduct() {
             }
           )
           .then(function () {
-            SuccessToast(`Product ${name} modified successfully!`);
+            SuccessToast(`Product ${name} modified successfully`);
+            <ToastContainer/>
             navigate("/products");
           })
           .catch(function () {
@@ -136,9 +138,9 @@ function AddUpdateProduct() {
           });
       } else {
         // 添加新商品
-        axios
-          .post(
-            "http://localhost:8080/api/products",
+        try {
+          const response = await Api.post(
+            "/products",
             {
               name: name,
               category: category.value,
@@ -147,20 +149,25 @@ function AddUpdateProduct() {
               price: price,
               imageUrl: imageUrl,
               description: productDescription,
-            },
-            {
-              headers: {
-                Authorization:`Bearer ${authToken}`,
-              },
             }
-          )
-          .then(function () {
-            SuccessToast(`Product ${name} added successfully!`);
-            navigate("/products");
-          })
-          .catch(function () {
+          );
+        
+          if (response.status === 201) {
+            SuccessToast(`Product ${name} added successfully`);
+            // navigate('/products');
+          } else if (response.status === 401) {
             ErrorToast(`Error: There was an issue in adding product: ${name}.`);
-          });
+          } else {
+            ErrorToast(`Error: Unexpected status code ${response.status}`);
+          }
+        } catch (error) {
+          ErrorToast(`Error: There was an issue in adding product: ${name}.`);
+        }
+            // {
+            //   headers: {
+            //     Authorization:`Bearer ${authToken}`,
+            //   },
+            // }
       }
     }
   };
@@ -293,6 +300,7 @@ function AddUpdateProduct() {
             <MuiButtonSubmitButton
               value={isEditMode ? "Modify Product" : "Save Product"}
             />
+            {/* <ToastContainer/> */}
             {isEditMode && isAdmin && (
               <>
                 {/* 添加删除按钮，并绑定确认删除函数 */}

@@ -102,6 +102,7 @@ function SignUp() {
     return (
         <>
             <Navbar />
+
             <Stack direction="column" alignItems="center" justifyItems="center" spacing={2} sx={{
                 marginTop: '5%'
             }}>
