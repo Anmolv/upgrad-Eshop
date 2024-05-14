@@ -9,7 +9,7 @@ import Navbar from '../../common/navbar/NavBar';
 import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
 import ConfirmationModal from '../../common/comfirmationModal/ConfirmationModal';
 
-const ProductCard = ({ product, isAdmin, onBuy, handleDeleteProduct }) => {
+const ProductCard = ({ product, isAdmin, handleDeleteProduct }) => {
     const navigate = useNavigate();
     return (
         <Card sx={{ width: 400 }}>
@@ -34,7 +34,7 @@ const ProductCard = ({ product, isAdmin, onBuy, handleDeleteProduct }) => {
                     {product.description}
                 </Typography>
                 <Stack direction="row" justifyContent='space-between'>
-                    <Button variant="contained" color="primary" onClick={onBuy}>
+                    <Button variant="contained" color="primary" onClick={() => navigate(`/product/details/${product.id}`)}>
                         Buy
                     </Button>
                     {isAdmin && (
@@ -55,7 +55,7 @@ const ProductCard = ({ product, isAdmin, onBuy, handleDeleteProduct }) => {
     );
 };
 
-const ProductList = ({ products, isAdmin, handleBuy, handleDeleteProduct }) => {
+const ProductList = ({ products, isAdmin, handleDeleteProduct }) => {
     return (
         <Grid container spacing={2} sx={{ paddingTop: '20px', paddingLeft: '80px', paddingRight: '40px' }}>
             {products.map((product) => (
@@ -63,7 +63,6 @@ const ProductList = ({ products, isAdmin, handleBuy, handleDeleteProduct }) => {
                     <ProductCard
                         product={product}
                         isAdmin={isAdmin}
-                        onBuy={handleBuy}
                         handleDeleteProduct={handleDeleteProduct}
                     />
                 </Grid>
@@ -162,10 +161,6 @@ function Products() {
         }
     };
 
-    const handleBuy = (productId) => {
-        // Handle buy functionality
-    };
-
     const sortedProducts = [...filteredProducts].sort((a, b) => {
         switch (sortBy) {
             case 'Price: High To Low':
@@ -225,7 +220,6 @@ function Products() {
                 <ProductList
                     products={sortedProducts}
                     isAdmin={authState.isAdmin}
-                    handleBuy={handleBuy}
                     handleDeleteProduct={handleDeleteProduct}
                 />
             </Stack>
