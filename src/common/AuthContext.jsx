@@ -8,16 +8,18 @@ export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     isLoggedIn: false,
     isAdmin: false,
-    user: null,
+    userEmail: null,
+    userId: null,
     access_token: ''
   });
 
-  const logIn = (user, isAdmin, access_token) => {
+  const logIn = (userEmail, isAdmin, access_token, userId) => {
     setAuthState({
       isLoggedIn: true,
-      isAdmin,
-      user,
-      access_token: access_token
+      isAdmin: isAdmin,
+      userEmail: userEmail,
+      access_token: access_token,
+      userId: userId
     });
   };
 
@@ -25,8 +27,9 @@ export const AuthProvider = ({ children }) => {
     setAuthState({
       isLoggedIn: false,
       isAdmin: false,
-      user: null,
-      access_token: ''
+      userEmail: null,
+      access_token: '',
+      userId: null
     });
   };
 

@@ -22,10 +22,10 @@ function App() {
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/products" element={<Products />} />
                         <Route path="/edit-product/:id" element={<AddUpdateProduct />} />
-                        <Route path="/add-product" element={<AddUpdateProduct/>} />
+                        <Route path="/add-product" element={<AddUpdateProduct />} />
                         <Route path="/product/details/:id" element={<Productdetail />} />
-                         <Route path="/addresses" element={<AddressForm />} />
-                         <Route path="/orders" element={<Orderdetails />} />
+                        <Route path="/addresses" element={<AddressForm />} />
+                        <Route path="/orders" element={<Orderdetails />} />
                     </Routes>
                 </Router>
                 <ToastContainer />

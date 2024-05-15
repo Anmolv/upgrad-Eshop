@@ -3,7 +3,7 @@ import CreatableSelect from "react-select/creatable";
 import { useAuth } from '../../common/AuthContext';
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Box, CircularProgress, TextField, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 
 //Toasts
 import { SuccessToast, ErrorToast } from "../../common/Toasts/Toasts";
@@ -42,7 +42,7 @@ function AddUpdateProduct() {
     axios
       .get("http://localhost:8080/api/products/categories", {
         headers: {
-          Authorization: `Bearer ${authState.access_token}`,
+          'x-auth-token' : authState.access_token
         },
       })
       .then(function (response) {
@@ -51,17 +51,15 @@ function AddUpdateProduct() {
       .catch(function () {
         ErrorToast("Error: There was an issue in retrieving categories list.");
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (isEditMode) {
-      // 如果是编辑模式，获取商品信息
       setDataLoading(true);
       axios
         .get(`http://localhost:8080/api/products/${id}`, {
           headers: {
-            Authorization: `Bearer ${authState.access_token}`,
+            'x-auth-token' : authState.access_token
           },
         })
         .then((response) => {
@@ -103,10 +101,8 @@ function AddUpdateProduct() {
       setPriceError(true);
     }
 
-    // 如果表单字段都不为空，则提交表单
     if (name && manufacturer && category?.value && availableItems && price) {
       if (isEditMode) {
-        // 编辑商品信息
         axios
           .put(
             `http://localhost:8080/api/products/${id}`,
@@ -121,7 +117,7 @@ function AddUpdateProduct() {
             },
             {
               headers: {
-                Authorization: `Bearer ${authState.access_token}`,
+                'x-auth-token' : authState.access_token
               },
             }
           )
@@ -136,7 +132,6 @@ function AddUpdateProduct() {
             );
           });
       } else {
-        // 添加新商品
         try {
           const response = await Api.post(
             "/products",
@@ -150,7 +145,7 @@ function AddUpdateProduct() {
               description: productDescription,
             }, {
             headers: {
-              Authorization: `Bearer ${authState.access_token}`,
+              'x-auth-token' : authState.access_token
             },
           }
           );
@@ -167,37 +162,6 @@ function AddUpdateProduct() {
         }
       }
       }
-    };
-
-    const handleDelete = () => {
-      // 删除商品
-      axios
-        .delete(`http://localhost:8080/api/products/${id}`, {
-          headers: {
-            Authorization: `Bearer ${authState.access_token}`,
-          },
-        })
-        .then(() => {
-          SuccessToast(`Product deleted successfully!`);
-          navigate("/products");
-        })
-        .catch(() => {
-          ErrorToast(`Error: There was an issue in deleting the product.`);
-        });
-    };
-
-    const handleDeleteConfirmation = () => {
-      setConfirmDeleteDialogOpen(true);
-    };
-
-    const handleDeleteCancel = () => {
-      setConfirmDeleteDialogOpen(false);
-    };
-
-    const handleDeleteConfirm = () => {
-      setConfirmDeleteDialogOpen(false);
-      // 确认删除商品
-      handleDelete();
     };
 
     return (
@@ -297,33 +261,7 @@ function AddUpdateProduct() {
               <MuiButtonSubmitButton
                 value={isEditMode ? "Modify Product" : "Save Product"}
               />
-              {/* <ToastContainer/> */}
-              {isEditMode && authState.isAdmin && (
-                <>
-                  {/* 添加删除按钮，并绑定确认删除函数 */}
-                  <Button onClick={handleDeleteConfirmation}>Delete Product</Button>
-                  {/* 确认删除对话框 */}
-                  <Dialog
-                    open={confirmDeleteDialogOpen}
-                    onClose={handleDeleteCancel}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Confirm deletion of product! Are you sure want to delete the product?
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleDeleteCancel}>Cancel</Button>
-                      <Button onClick={handleDeleteConfirm} autoFocus>
-                        OK
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </>
-              )}
+            
             </form>
           )}
         </div>

@@ -35,13 +35,13 @@ function SignIn() {
         try {
             const response = await Api.post('/auth/signin', { 'username': email, 'password': password });
             if (response.status === 200) {
-                logIn(email, response.data['isAdmin'] == null ? true : response.data['isAdmin'], response.data['token']);
+                logIn(email, response.data['roles'].includes("ADMIN"), response.headers["x-auth-token"], response.data['id']);
                 navigate('/products');
             } else if (response.status === 401) {
                 alert(`User is not authorized. Invalid Email or Password!`)
             }
         } catch (error) {
-            alert(`User is not authorized. Invalid Email or Password!`)
+            alert(`User is not authorized. Invalid Email or Password! Error: ${error}`)
         }
     };
 

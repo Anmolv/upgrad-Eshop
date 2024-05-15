@@ -93,11 +93,10 @@ function Products() {
         Api
             .delete(`/products/${deleteProductId}`, {
                 headers: {
-                    Authorization: `Bearer ${authState.access_token}`,
+                    'x-auth-token' : authState.access_token,
                 },
             })
             .then(function (response) {
-                console.log(`Product ${deleteProductId} Deleted`);
                 SuccessToast(`Product ${deleteProductName} deleted successfully`);
                 getAllProducts();
             })

@@ -85,7 +85,7 @@ function OrderDetails({ onSaveAddress, addresses }) {
     axios
       .get("http://localhost:8080/api/products", {
         headers: {
-          Authorization: `Bearer ${authState.access_token}`,
+          'x-auth-token' : authState.access_token,
         },
       })
       .then(function (response) {
