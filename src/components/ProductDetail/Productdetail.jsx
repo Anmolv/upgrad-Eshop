@@ -5,7 +5,8 @@ import { TextField, FormControl, Stack, ToggleButtonGroup, ToggleButton } from '
 import './ProductDetail.css';
 import Navbar from '../../common/navbar/NavBar';
 import Api from '../../common/Api';
-
+import Lock from '@mui/icons-material/Lock';
+import { iconBgColor } from '../../common/Constants';
 
 function Productdetail() {
     const { authState } = useAuth();
@@ -37,9 +38,6 @@ function Productdetail() {
         }
     }
 
-
-
-
     const getProductData = async (id) => {
         try {
             const response = await Api.get(`/products/${id}`);
@@ -64,25 +62,27 @@ function Productdetail() {
     }, []);
 
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (!authState.isLoggedIn) {
             navigate("/login");
         }
-    }, []);
+    }, []);*/
 
     const handleQuantityChange = (e) => {
         setQuantity(e.target.value);
         setIsQuantityEntered(e.target.value.trim() !== '');
     };
 
+
     const handlePlaceOrder = () => {
         if (isQuantityEntered) {
-            if (quantity < 1) {
-                setQuantityError("Quanity cannot be 0 or negative");
-            } else if (quantity > availableQuantity) {
-                setQuantityError("Quantity greater than Available Quantity: "  + availableQuantity);
+            const enteredQuantity = parseInt(quantity, 10); // Parse quantity as an integer
+            if (enteredQuantity < 1) {
+                setQuantityError("Quantity cannot be 0 or negative");
+            } else if (enteredQuantity > availableQuantity) {
+                setQuantityError("Quantity greater than Available Quantity: " + availableQuantity);
             } else {
-                navigate('/addresses');
+                navigate('/addresses', { state: { quantity: enteredQuantity } }); // Pass quantity in state to the next page
             }
         } else {
             setQuantityError("Enter quantity to order");
@@ -90,25 +90,23 @@ function Productdetail() {
     };
 
     return (
-        <div>
+        <div className="product-detail-container">
             <Navbar />
-            <Stack alignItems='center'>
-                <ToggleButtonGroup sx={{ margin: '10px', justifyContent: 'center' }}>
+            <Stack direction="column" alignItems="center" justifyItems="center" spacing={2} sx={{
+                marginTop: '5%'
+            }}>
+                <ToggleButtonGroup sx={{ margin: '5px', justifyContent: 'center' }}>
                     {categories.map((category) => (
                         <ToggleButton key={category} value={category}>
                             {category}
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
-                <br>
-                </br>
-                <br>
-                </br>
-                <br></br>
-
-                {productName !== '' && (
+              
+                
                     <div className="product-container">
                         <img src={imageUrl} alt={productName} className="product-image" />
+                        
                         <div className="product-details">
                             <div className="info-container">
                                 <h2>{productName}</h2>
@@ -119,28 +117,28 @@ function Productdetail() {
                             <p className="price">₹ {productPrice}</p>
                         </div>
                     </div>
-                )}
-
-                {productName !== '' && (<FormControl fullWidth>
-                    <TextField
-                        id="quantity"
-                        label="Enter Quantity"
-                        name="quantity"
-                        type="number"
-                        style={{ width: '30%', marginLeft: '650px' }}
-                        value={quantity}
-                        onChange={handleQuantityChange}
-                        error={!!quantityError} helperText={quantityError}
-                        required
-
-                    />
-                    <br />
-
-                    <button className="order-btn" onClick={handlePlaceOrder} disabled={!isQuantityEntered}
-                        style={{ width: '20%', marginLeft: '650px' }}
-
-                    >PLACE ORDER</button>
-                </FormControl>)}
+                     <FormControl fullWidth>
+                        <TextField
+                            id="quantity"
+                            label="Enter Quantity"
+                            name="quantity"
+                            type="number"
+                            style={{ width: '30%',marginLeft: '650px' }}
+                            value={quantity}
+                            onChange={handleQuantityChange}
+                            error={!!quantityError} helperText={quantityError}
+                            required
+    
+                        />
+                        <br />
+    
+                        <button className="order-btn" onClick={handlePlaceOrder} disabled={!isQuantityEntered}
+                            style={{ width: '20%', marginLeft: '650px' }}
+    
+                        >PLACE ORDER</button>
+                    </FormControl>
+              
+               
 
             </Stack>
         </div>

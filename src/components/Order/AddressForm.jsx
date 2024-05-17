@@ -14,6 +14,8 @@ import Navbar from '../../common/navbar/NavBar';
 import Api from '../../common/Api';
 
 
+
+
 function AddressForm({ onSaveAddress, addresses }) {
     const { authState } = useAuth();
     const navigate = useNavigate();
@@ -83,7 +85,7 @@ useEffect(() => {
   }; 
  
   fetchData(); // Call the fetchData function when the component mounts 
-}, []); // Empty dependency array to run the effect only once 
+}, []); 
 /*
 for fetchinh
 
@@ -144,7 +146,7 @@ for fetchinh
           label="Select Option" 
           name='Select...' 
           style={{ width: '500px',background: 'white' }} 
-          value={selectAddress} //Use the component's state value
+          value={selectAddress} 
           onChange={(e) => setSelectAddress(e.target.value)}// Add onChange event handler function to update the selected address value
         > 
         
