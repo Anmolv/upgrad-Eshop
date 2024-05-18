@@ -7,7 +7,7 @@ import { AuthProvider } from '../../common/AuthContext';
 import { ProductProvider } from '../../common/ProductContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ProductDetail from '../ProductDetail/ProductDetail';
+import ProductDetail from '../ProductDetail/Productdetail';
 import Order from '../Order/Order';
 
 function App() {
