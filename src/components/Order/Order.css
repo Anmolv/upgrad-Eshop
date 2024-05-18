@@ -1,0 +1,18 @@
+#stepper-div {
+    margin: 20px 80px;
+}
+
+#stepper {
+    background-color: white;
+    padding: 20px 50px;
+}
+
+#main-section {
+    background-color: whitesmoke;
+    min-height: 100vh;
+    height: fit-content;
+}
+
+.button {
+    background-color: #3f51b5;
+}

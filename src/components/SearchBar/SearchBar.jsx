@@ -18,7 +18,6 @@ const SearchBar = ({onSearch}) => {
         };
     };
 
-    // Debounced version of onSearch function
     const debouncedSearch = debounce(onSearch, 300); 
 
     return <Box style={{ flexGrow: 8, display: 'flex', justifyContent: 'center' }}>

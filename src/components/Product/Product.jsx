@@ -93,7 +93,7 @@ function Products() {
         Api
             .delete(`/products/${deleteProductId}`, {
                 headers: {
-                    'x-auth-token' : authState.access_token,
+                    'x-auth-token': authState.access_token,
                 },
             })
             .then(function (response) {
@@ -167,6 +167,7 @@ function Products() {
             case 'Price: Low To High':
                 return a.price - b.price;
             case 'Newest':
+                // Will not work as createdTime is coming from server
                 return b.id - a.id;
             default:
                 return 0;
@@ -186,7 +187,6 @@ function Products() {
             <Stack>
                 <ToggleButtonGroup value={category} exclusive onChange={handleFilter} sx={{ margin: '10px', justifyContent: 'center' }}>
                     {
-
                         categories.map((category) => (
                             <ToggleButton key={category} value={category}>
                                 {category}

@@ -7,12 +7,10 @@ import { AuthProvider } from '../../common/AuthContext';
 import { ProductProvider } from '../../common/ProductContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Productdetail from '../ProductDetail/Productdetail'
-import AddressForm from '../Order/AddressForm'
-import Orderdetails from '../Order/orderDetails'
+import ProductDetail from '../ProductDetail/ProductDetail';
+import Order from '../Order/Order';
 
 function App() {
-
     
     return <>
         <AuthProvider>
@@ -25,9 +23,8 @@ function App() {
                         <Route path="/products" element={<Products />} />
                         <Route path="/edit-product/:id" element={<AddUpdateProduct />} />
                         <Route path="/add-product" element={<AddUpdateProduct />} />
-                        <Route path="/product/details/:id" element={<Productdetail />} />
-                        <Route path="/addresses" element={<AddressForm />} />
-                        <Route path="/orders" element={<Orderdetails />} />
+                        <Route path="/product/details/:id" element={<ProductDetail />} />
+                        <Route path="/orders" element={<Order />} />
                     </Routes>
                 </Router>
                 <ToastContainer />

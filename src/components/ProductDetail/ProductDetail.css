@@ -1,16 +1,16 @@
 .quantity-box {
-  background-color: blue;
+  background-color: #3f51b5;
   color: white;
-  border-radius: 10px;
-  /* Adjust the value to increase or decrease the roundness */
-  padding: 5px 30px;
-  display: inline-block;
-  margin-left: 50px;
+  border-radius: 25px;
+  padding: 5px 10px 5px 10px;
+  margin-left: 20px;
+  font-size: 14px;
 }
 
 .price {
   color: red;
   font-size: 24px;
+  font-weight: 600;
 }
 
 .product-container {
@@ -19,33 +19,24 @@
 }
 
 .product-image {
-  width: 300px;
-  height: 300px;
-  margin-right: 80px;
+  width: 450px;
+  height: 450px;
+  margin-right: 20px;
 }
 
 .product-details {
-  flex: 1;
+  margin-top: 80px;
 }
 
-.order-btn {
-  background-color: blue;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+#order-btn {
+  width: 150px;
+  margin-top: 30px;
   cursor: pointer;
+  background-color: #3f51b5;
 }
 
 .info-container {
   display: flex;
   align-items: center;
-
+  height: 60px;
 }
-
-.quantity-info {
-  margin-left: 10px;
-  /* Adjust margin as needed */
-}
-
-/* Additional styles can be added as needed */

@@ -38,7 +38,6 @@ function AddUpdateProduct() {
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    // 获取商品分类列表
     axios
       .get("http://localhost:8080/api/products/categories", {
         headers: {
@@ -87,7 +86,6 @@ function AddUpdateProduct() {
     setAvailableItemsError(false);
     setPriceError(false);
 
-    // 检查表单字段是否为空
     if (name === "") {
       setNameError(true);
     }

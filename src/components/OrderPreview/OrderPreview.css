@@ -1,0 +1,46 @@
+.order-details {
+  margin: 0px 80px;
+  width: 1300px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    background-color: white;
+  
+  }
+
+  .left-column {
+    width: 850px;
+  }
+
+  .left-column,
+  .right-column {
+    padding: 10px;
+    vertical-align: top;
+  }
+  
+    
+  .left-section,
+  .right-section {
+    padding: 15px;
+    border-radius: 100px;
+  }
+  
+  .vertical-line {
+    border-left: 1px solid #ddd; /* Vertical line style */
+  }
+
+  .left-section,
+  .right-section {
+    padding: 15px;
+    border-radius: 100px;
+  }
+  
+  .left-section h2,
+  .right-section h2 {
+    margin-bottom: 10px;
+  }
+  
+  .left-section p,
+  .right-section p {
+    margin-bottom: 5px;
+  }
+  
